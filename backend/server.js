@@ -22,13 +22,29 @@ const taskSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  category: {
+    type: String,
+    default: "Загальне",
+  },
+  priority: {
+    type: String,
+    enum: ["low", "medium", "high"],
+    default: "medium",
+  },
+  deadline: {
+    type: Date,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const Task = mongoose.model("Task", taskSchema);
 
 app.get("/api/tasks", async (req, res) => {
   try {
-    const tasks = await Task.find();
+    const tasks = await Task.find().sort({ createdAt: -1 });
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ message: "Помилка отримання задач" });
@@ -39,7 +55,10 @@ app.post("/api/tasks", async (req, res) => {
   try {
     const newTask = new Task({
       title: req.body.title,
-      completed: false,
+      completed: req.body.completed ?? false,
+      category: req.body.category || "Загальне",
+      priority: req.body.priority || "medium",
+      deadline: req.body.deadline || null,
     });
 
     const savedTask = await newTask.save();
@@ -56,6 +75,9 @@ app.put("/api/tasks/:id", async (req, res) => {
       {
         title: req.body.title,
         completed: req.body.completed,
+        category: req.body.category,
+        priority: req.body.priority,
+        deadline: req.body.deadline || null,
       },
       { new: true },
     );
