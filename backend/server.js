@@ -1,12 +1,15 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const authRoutes = require("./routes/auth");
 
 const app = express();
 const PORT = 3000;
 
 app.use(cors());
 app.use(express.json());
+
+app.use("/auth", authRoutes);
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/kursova_db")
@@ -34,6 +37,19 @@ const taskSchema = new mongoose.Schema({
   deadline: {
     type: Date,
   },
+  taskType: {
+    type: String,
+    enum: ["personal", "team"],
+    default: "personal",
+  },
+  team: {
+    type: String,
+    default: "",
+  },
+  owner: {
+    type: String,
+    default: "",
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -44,7 +60,15 @@ const Task = mongoose.model("Task", taskSchema);
 
 app.get("/api/tasks", async (req, res) => {
   try {
-    const tasks = await Task.find().sort({ createdAt: -1 });
+    const { username, team } = req.query;
+
+    const tasks = await Task.find({
+      $or: [
+        { taskType: "personal", owner: username },
+        { taskType: "team", team: team },
+      ],
+    }).sort({ createdAt: -1 });
+
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ message: "Помилка отримання задач" });
@@ -53,17 +77,23 @@ app.get("/api/tasks", async (req, res) => {
 
 app.post("/api/tasks", async (req, res) => {
   try {
+    console.log("BODY:", req.body);
+
     const newTask = new Task({
       title: req.body.title,
       completed: req.body.completed ?? false,
       category: req.body.category || "Загальне",
       priority: req.body.priority || "medium",
       deadline: req.body.deadline || null,
+      taskType: req.body.taskType || "personal",
+      team: req.body.team || "",
+      owner: req.body.owner || "",
     });
 
     const savedTask = await newTask.save();
     res.status(201).json(savedTask);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Помилка створення задачі" });
   }
 });
@@ -78,6 +108,9 @@ app.put("/api/tasks/:id", async (req, res) => {
         category: req.body.category,
         priority: req.body.priority,
         deadline: req.body.deadline || null,
+        taskType: req.body.taskType || "personal",
+        team: req.body.team || "",
+        owner: req.body.owner || "",
       },
       { new: true },
     );
