@@ -1,4 +1,4 @@
-.login-page {
+.register-page {
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -6,7 +6,7 @@
     background: #f4f6f9;
 }
 
-.login-card {
+.register-card {
     width: 100%;
     max-width: 380px;
     background: white;
@@ -18,19 +18,19 @@
     gap: 14px;
 }
 
-.login-card h1 {
+.register-card h1 {
     text-align: center;
     margin-bottom: 10px;
 }
 
-.login-card input {
+.register-card input {
     padding: 12px;
     border: 1px solid #ccc;
     border-radius: 10px;
     font-size: 14px;
 }
 
-.login-card button {
+.register-card button {
     padding: 12px;
     border: none;
     border-radius: 10px;
@@ -40,19 +40,21 @@
     cursor: pointer;
 }
 
-.login-card button:hover {
+.register-card button:hover {
     background: #1d4ed8;
 }
 
-.error {
-    color: red;
-    text-align: center;
+.auth-text {
+    margin-top: 12px;
+    color: #555;
 }
 
 .auth-link {
-    display: inline-block;
-    width: fit-content;
     color: #2563eb;
     cursor: pointer;
-    margin-top: 12px;
+    margin-left: 5px;
+}
+
+.auth-link:hover {
+    text-decoration: underline;
 }

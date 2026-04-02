@@ -1,0 +1,16 @@
+<div class="register-page">
+  <div class="register-card">
+    <h1>Реєстрація</h1>
+
+    <input type="text" placeholder="Логін" [(ngModel)]="username" />
+
+    <input type="password" placeholder="Пароль" [(ngModel)]="password" />
+
+    <button type="button" (click)="register()">Зареєструватись</button>
+
+    <p class="auth-text">
+      Вже є акаунт?
+      <span class="auth-link" (click)="goToLogin()">Увійти</span>
+    </p>
+  </div>
+</div>

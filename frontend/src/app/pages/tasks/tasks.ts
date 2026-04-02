@@ -19,7 +19,8 @@ export class TasksComponent implements OnInit {
   newTaskCategory = 'Навчання';
   newTaskPriority: 'low' | 'medium' | 'high' = 'medium';
   newTaskDeadline = '';
-  newTaskType: 'personal' | 'team' = 'personal';
+  newTaskType: 'personal' | 'shared' = 'personal';
+  newTaskAssignee = '';
 
   filterCategory = 'Усі';
   showCompleted = false;
@@ -28,8 +29,8 @@ export class TasksComponent implements OnInit {
 
   selectedTask: Task | null = null;
   isSidebarOpen = false;
-  
-  completeSound = new Audio('assets/sounds/complete.wav');
+
+  completeSound = new Audio('/sounds/complete.wav');
 
   constructor(
     private taskService: TaskService,
@@ -48,7 +49,7 @@ export class TasksComponent implements OnInit {
     if (!this.currentUser) return;
 
     this.taskService
-      .getTasks(this.currentUser.username, this.currentUser.team)
+      .getTasks(this.currentUser.username)
       .subscribe(data => {
         this.tasks = data;
         this.cdr.detectChanges();
@@ -65,6 +66,11 @@ export class TasksComponent implements OnInit {
   addTask(): void {
     if (!this.newTaskTitle.trim() || !this.currentUser) return;
 
+    const sharedUsers =
+      this.newTaskType === 'shared' && this.newTaskAssignee.trim()
+        ? [this.newTaskAssignee.trim()]
+        : [];
+
     const task: Task = {
       title: this.newTaskTitle,
       completed: false,
@@ -72,8 +78,8 @@ export class TasksComponent implements OnInit {
       priority: this.newTaskPriority,
       deadline: this.newTaskDeadline || undefined,
       taskType: this.newTaskType,
-      team: this.newTaskType === 'team' ? this.currentUser.team : '',
-      owner: this.newTaskType === 'personal' ? this.currentUser.username : '',
+      owner: this.currentUser.username,
+      sharedWith: sharedUsers,
       steps: [],
       notes: ''
     };
@@ -84,12 +90,13 @@ export class TasksComponent implements OnInit {
       this.newTaskPriority = 'medium';
       this.newTaskDeadline = '';
       this.newTaskType = 'personal';
+      this.newTaskAssignee = '';
       this.loadTasks();
     });
   }
 
   playCompleteSound(): void {
-    const audio = new Audio('/sounds/complete.wav')
+    const audio = new Audio('/sounds/complete.wav');
     audio.volume = 1;
     audio.play().catch(err => {
       console.log('Помилка відтворення звуку:', err);
@@ -113,7 +120,7 @@ export class TasksComponent implements OnInit {
     }
 
     if (newCompleted) {
-       this.playCompleteSound();
+      this.playCompleteSound();
     }
 
     const updatedTask: Task = {
@@ -141,7 +148,14 @@ export class TasksComponent implements OnInit {
   addStep(): void {
     if (!this.selectedTask || !this.selectedTask._id || !this.newStepText.trim()) return;
 
-    const updatedSteps = [...(this.selectedTask.steps || []), this.newStepText.trim()];
+    const normalizedSteps = this.normalizeSteps(this.selectedTask.steps || []);
+
+    const newStep = {
+      text: this.newStepText.trim(),
+      author: this.currentUser.username
+    };
+
+    const updatedSteps = [...normalizedSteps, newStep];
 
     const updatedTask: Task = {
       ...this.selectedTask,
@@ -156,20 +170,22 @@ export class TasksComponent implements OnInit {
     );
 
     this.taskService.updateTask(updatedTask._id!, updatedTask).subscribe({
-      next: (serverTask) => {
+      next: (serverTask: Task) => {
         this.selectedTask = serverTask;
         this.loadTasks();
       },
-      error: () => {
+      error: (err) => {
+        console.log('STEP SAVE ERROR:', err);
         this.loadTasks();
       }
     });
   }
-
   removeStep(index: number): void {
     if (!this.selectedTask || !this.selectedTask._id || !this.selectedTask.steps) return;
 
-    const updatedSteps = this.selectedTask.steps.filter((_, i) => i !== index);
+    const normalizedSteps = this.normalizeSteps(this.selectedTask.steps);
+
+    const updatedSteps = normalizedSteps.filter((_, i) => i !== index);
 
     const updatedTask: Task = {
       ...this.selectedTask,
@@ -183,47 +199,58 @@ export class TasksComponent implements OnInit {
     );
 
     this.taskService.updateTask(updatedTask._id!, updatedTask).subscribe({
-      next: (serverTask) => {
+      next: (serverTask: Task) => {
         this.selectedTask = serverTask;
         this.loadTasks();
       },
-      error: () => {
+      error: (err) => {
+        console.log('REMOVE STEP ERROR:', err);
         this.loadTasks();
       }
     });
+  }
+
+  normalizeSteps(steps: any[] = []) {
+    return steps.map((step: any) =>
+      typeof step === 'string'
+        ? { text: step, author: 'unknown' }
+        : step
+    );
   }
 
   saveNotes(): void {
     if (!this.selectedTask || !this.selectedTask._id) return;
 
     const updatedTask: Task = {
-      ...this.selectedTask
+      ...this.selectedTask,
+      steps: this.normalizeSteps(this.selectedTask.steps || [])
     };
 
     this.tasks = this.tasks.map(t =>
-      t._id === updatedTask._id ? { ...t, notes: updatedTask.notes } : t
+      t._id === updatedTask._id ? { ...t, notes: updatedTask.notes, steps: updatedTask.steps } : t
     );
 
     this.taskService.updateTask(updatedTask._id!, updatedTask).subscribe({
-      next: (serverTask) => {
+      next: (serverTask: Task) => {
         this.selectedTask = serverTask;
         this.loadTasks();
       },
-      error: () => {
+      error: (err) => {
+        console.log('NOTES SAVE ERROR:', err);
         this.loadTasks();
       }
     });
   }
 
   openTaskDetails(task: Task): void {
-    this.selectedTask = {
-      ...task,
-      steps: task.steps || [],
-      notes: task.notes || ''
-    };
-    this.isSidebarOpen = true;
-    this.newStepText = '';
-  }
+  this.selectedTask = {
+    ...task,
+    steps: this.normalizeSteps(task.steps || []),
+    notes: task.notes || ''
+  };
+  this.isSidebarOpen = true;
+  this.newStepText = '';
+}
 
   closeSidebar(): void {
     this.isSidebarOpen = false;
@@ -238,7 +265,7 @@ export class TasksComponent implements OnInit {
   }
 
   getTaskTypeLabel(taskType?: string): string {
-    return taskType === 'team' ? 'Командна' : 'Персональна';
+    return taskType === 'shared' ? 'Спільна' : 'Персональна';
   }
 
   get activeTasks(): Task[] {

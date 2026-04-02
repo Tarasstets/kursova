@@ -32,7 +32,7 @@
         <span class="option-icon">👤</span>
         <select [(ngModel)]="newTaskType" class="mini-select">
           <option value="personal">Персональна</option>
-          <option value="team">Командна</option>
+          <option value="shared">Командна</option>
         </select>
       </div>
 
@@ -46,6 +46,17 @@
       </div>
     </div>
   </div>
+  @if (newTaskType === 'shared') {
+    <div class="option-item">
+      <span class="option-icon">👥</span>
+      <input
+        type="text"
+        [(ngModel)]="newTaskAssignee"
+        class="mini-input"
+        placeholder="Логін користувача"
+      />
+    </div>
+  }
 
   <div class="filters">
     <select [(ngModel)]="filterCategory">
@@ -128,22 +139,9 @@
         </div>
 
         <div class="sidebar-content">
+          <p><strong>Автор:</strong> {{ selectedTask.owner }}</p>
           <p><strong>Категорія:</strong> {{ selectedTask.category }}</p>
           <p><strong>Пріоритет:</strong> {{ getPriorityLabel(selectedTask.priority) }}</p>
-          <p><strong>Тип:</strong> {{ getTaskTypeLabel(selectedTask.taskType) }}</p>
-
-          @if (selectedTask.taskType === 'personal') {
-            <p><strong>Власник:</strong> {{ selectedTask.owner }}</p>
-          }
-
-          @if (selectedTask.taskType === 'team') {
-            <p><strong>Команда:</strong> {{ selectedTask.team }}</p>
-          }
-
-          @if (selectedTask.deadline) {
-            <p><strong>Дедлайн:</strong> {{ selectedTask.deadline | date: 'dd.MM.yyyy' }}</p>
-          }
-
           <p>
             <strong>Статус:</strong>
             @if (selectedTask.completed) {
@@ -152,6 +150,25 @@
               <span>Активна</span>
             }
           </p>
+          <p><strong>Тип:</strong> {{ getTaskTypeLabel(selectedTask.taskType) }}</p>
+          @if (selectedTask.taskType === 'shared') {
+            <div class="sidebar-block">
+              <h3>Команда:</h3>
+
+              <div class="team-list">
+                <span class="team-user" *ngFor="let user of selectedTask.sharedWith">
+                  {{ user }}
+                </span>
+              </div>
+            </div>
+          }
+          @if (selectedTask.taskType === 'personal') {
+            <p><strong>Власник:</strong> {{ selectedTask.owner }}</p>
+          }
+
+          @if (selectedTask.deadline) {
+            <p><strong>Дедлайн:</strong> {{ selectedTask.deadline | date: 'dd.MM.yyyy' }}</p>
+          }
 
           <div class="sidebar-block">
             <h3>Додати крок</h3>
@@ -169,7 +186,13 @@
             @if (selectedTask.steps?.length) {
               <div class="steps-list">
                 <div class="step-item" *ngFor="let step of selectedTask.steps; let i = index">
-                  <span>{{ step }}</span>
+                  <span>
+                    @if (step.text) {
+                      <strong>[{{ step.author }}]</strong> {{ step.text }}
+                    } @else {
+                      {{ step }}
+                    }
+                  </span>
                   <button class="remove-step-btn" (click)="removeStep(i)">✕</button>
                 </div>
               </div>

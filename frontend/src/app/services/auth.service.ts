@@ -31,5 +31,12 @@ export class AuthService {
   getUser(): any {
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;
-  }
+    }
+    
+    register(username: string, password: string) {
+    return this.http.post('http://localhost:3000/auth/register', {
+        username,
+        password
+    });
+    }
 }

@@ -31,5 +31,9 @@ export class LoginComponent {
         this.errorMessage = 'Невірний логін або пароль';
       }
     });
-  }
+    }
+    
+    goToRegister(): void {
+  this.router.navigate(['/register']);
+}
 }

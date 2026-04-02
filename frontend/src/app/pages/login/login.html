@@ -7,7 +7,10 @@
     <input type="password" placeholder="Пароль" [(ngModel)]="password" />
 
     <button (click)="onLogin()">Увійти</button>
-
+    <p class="auth-text">
+      Немає акаунта?
+      <span class="auth-link" (click)="goToRegister()"> Зареєструватись </span>
+    </p>
     @if (errorMessage) {
       <p class="error">{{ errorMessage }}</p>
     }

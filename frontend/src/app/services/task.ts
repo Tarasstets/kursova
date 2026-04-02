@@ -2,6 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+export interface Step {
+  text: string;
+  author: string;
+}
+
 export interface Task {
   _id?: string;
   title: string;
@@ -9,12 +14,12 @@ export interface Task {
   category: string;
   priority: string;
   deadline?: string;
-  taskType: 'personal' | 'team';
-  team: string;
+  taskType: 'personal' | 'shared';
   owner: string;
   createdAt?: string;
-  steps?: string[];
+  steps?: Step[];
   notes?: string;
+  sharedWith?: string[];
 }
 
 @Injectable({
@@ -25,8 +30,8 @@ export class TaskService {
 
   constructor(private http: HttpClient) {}
 
-  getTasks(username: string, team: string): Observable<Task[]> {
-    return this.http.get<Task[]>(`${this.apiUrl}?username=${username}&team=${team}`);
+  getTasks(username: string): Observable<Task[]> {
+    return this.http.get<Task[]>(`${this.apiUrl}?username=${username}`);
   }
 
   addTask(task: Task): Observable<Task> {

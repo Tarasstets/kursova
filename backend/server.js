@@ -39,23 +39,28 @@ const taskSchema = new mongoose.Schema({
   },
   taskType: {
     type: String,
-    enum: ["personal", "team"],
+    enum: ["personal", "shared"],
     default: "personal",
-  },
-  team: {
-    type: String,
-    default: "",
   },
   owner: {
     type: String,
     default: "",
+  },
+  sharedWith: {
+    type: [String],
+    default: [],
   },
   createdAt: {
     type: Date,
     default: Date.now,
   },
   steps: {
-    type: [String],
+    type: [
+      {
+        text: String,
+        author: String,
+      },
+    ],
     default: [],
   },
   notes: {
@@ -68,17 +73,24 @@ const Task = mongoose.model("Task", taskSchema);
 
 app.get("/api/tasks", async (req, res) => {
   try {
-    const { username, team } = req.query;
+    const { username } = req.query;
 
     const tasks = await Task.find({
       $or: [
-        { taskType: "personal", owner: username },
-        { taskType: "team", team: team },
+        {
+          taskType: "personal",
+          owner: username,
+        },
+        {
+          taskType: "shared",
+          $or: [{ owner: username }, { sharedWith: username }],
+        },
       ],
     }).sort({ createdAt: -1 });
 
     res.json(tasks);
   } catch (error) {
+    console.error("GET TASKS ERROR:", error);
     res.status(500).json({ message: "Помилка отримання задач" });
   }
 });
@@ -94,7 +106,7 @@ app.post("/api/tasks", async (req, res) => {
       priority: req.body.priority || "medium",
       deadline: req.body.deadline || null,
       taskType: req.body.taskType || "personal",
-      team: req.body.team || "",
+      sharedWith: req.body.sharedWith || [],
       owner: req.body.owner || "",
       steps: req.body.steps || [],
       notes: req.body.notes || "",
@@ -120,7 +132,7 @@ app.put("/api/tasks/:id", async (req, res) => {
         priority: req.body.priority,
         deadline: req.body.deadline || null,
         taskType: req.body.taskType || "personal",
-        team: req.body.team || "",
+        sharedWith: req.body.sharedWith || [],
         owner: req.body.owner || "",
         steps: req.body.steps || [],
         notes: req.body.notes || "",
