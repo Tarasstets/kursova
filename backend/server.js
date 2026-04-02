@@ -54,6 +54,14 @@ const taskSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  steps: {
+    type: [String],
+    default: [],
+  },
+  notes: {
+    type: String,
+    default: "",
+  },
 });
 
 const Task = mongoose.model("Task", taskSchema);
@@ -88,6 +96,8 @@ app.post("/api/tasks", async (req, res) => {
       taskType: req.body.taskType || "personal",
       team: req.body.team || "",
       owner: req.body.owner || "",
+      steps: req.body.steps || [],
+      notes: req.body.notes || "",
     });
 
     const savedTask = await newTask.save();
@@ -100,6 +110,7 @@ app.post("/api/tasks", async (req, res) => {
 
 app.put("/api/tasks/:id", async (req, res) => {
   try {
+    console.log("UPDATE BODY:", req.body);
     const updatedTask = await Task.findByIdAndUpdate(
       req.params.id,
       {
@@ -111,12 +122,17 @@ app.put("/api/tasks/:id", async (req, res) => {
         taskType: req.body.taskType || "personal",
         team: req.body.team || "",
         owner: req.body.owner || "",
+        steps: req.body.steps || [],
+        notes: req.body.notes || "",
       },
-      { new: true },
+      { new: true, runValidators: true },
     );
+
+    console.log("UPDATED TASK:", updatedTask);
 
     res.json(updatedTask);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Помилка оновлення задачі" });
   }
 });
