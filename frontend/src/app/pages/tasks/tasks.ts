@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgFor, NgIf, DatePipe } from '@angular/common';
 import { Task, TaskService } from '../../services/task';
@@ -33,7 +33,8 @@ export class TasksComponent implements OnInit {
 
   constructor(
     private taskService: TaskService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -50,6 +51,7 @@ export class TasksComponent implements OnInit {
       .getTasks(this.currentUser.username, this.currentUser.team)
       .subscribe(data => {
         this.tasks = data;
+        this.cdr.detectChanges();
 
         if (this.selectedTask?._id) {
           const updatedSelectedTask = this.tasks.find(
