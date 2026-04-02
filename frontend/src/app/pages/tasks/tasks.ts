@@ -1,0 +1,259 @@
+import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { NgFor, NgIf, DatePipe } from '@angular/common';
+import { Task, TaskService } from '../../services/task';
+import { AuthService } from '../../services/auth.service';
+
+@Component({
+  selector: 'app-tasks',
+  standalone: true,
+  imports: [FormsModule, NgFor, NgIf, DatePipe],
+  templateUrl: './tasks.html',
+  styleUrl: './tasks.css'
+})
+export class TasksComponent implements OnInit {
+  tasks: Task[] = [];
+  newStepText = '';
+
+  newTaskTitle = '';
+  newTaskCategory = 'Навчання';
+  newTaskPriority: 'low' | 'medium' | 'high' = 'medium';
+  newTaskDeadline = '';
+  newTaskType: 'personal' | 'team' = 'personal';
+
+  filterCategory = 'Усі';
+  showCompleted = false;
+
+  currentUser: any = null;
+
+  selectedTask: Task | null = null;
+  isSidebarOpen = false;
+  
+  completeSound = new Audio('assets/sounds/complete.wav');
+
+  constructor(
+    private taskService: TaskService,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit(): void {
+    this.currentUser = this.authService.getUser();
+    this.loadTasks();
+    this.completeSound.volume = 1;
+    this.completeSound.load();
+  }
+
+  loadTasks(): void {
+    if (!this.currentUser) return;
+
+    this.taskService
+      .getTasks(this.currentUser.username, this.currentUser.team)
+      .subscribe(data => {
+        this.tasks = data;
+
+        if (this.selectedTask?._id) {
+          const updatedSelectedTask = this.tasks.find(
+            t => t._id === this.selectedTask?._id
+          );
+          this.selectedTask = updatedSelectedTask || null;
+        }
+      });
+  }
+
+  addTask(): void {
+    if (!this.newTaskTitle.trim() || !this.currentUser) return;
+
+    const task: Task = {
+      title: this.newTaskTitle,
+      completed: false,
+      category: this.newTaskCategory,
+      priority: this.newTaskPriority,
+      deadline: this.newTaskDeadline || undefined,
+      taskType: this.newTaskType,
+      team: this.newTaskType === 'team' ? this.currentUser.team : '',
+      owner: this.newTaskType === 'personal' ? this.currentUser.username : '',
+      steps: [],
+      notes: ''
+    };
+
+    this.taskService.addTask(task).subscribe(() => {
+      this.newTaskTitle = '';
+      this.newTaskCategory = 'Навчання';
+      this.newTaskPriority = 'medium';
+      this.newTaskDeadline = '';
+      this.newTaskType = 'personal';
+      this.loadTasks();
+    });
+  }
+
+  playCompleteSound(): void {
+    const audio = new Audio('/sounds/complete.wav')
+    audio.volume = 1;
+    audio.play().catch(err => {
+      console.log('Помилка відтворення звуку:', err);
+    });
+  }
+
+  toggleTask(task: Task): void {
+    if (!task._id) return;
+
+    const newCompleted = !task.completed;
+
+    this.tasks = this.tasks.map(t =>
+      t._id === task._id ? { ...t, completed: newCompleted } : t
+    );
+
+    if (this.selectedTask?._id === task._id) {
+      this.selectedTask = {
+        ...this.selectedTask,
+        completed: newCompleted
+      };
+    }
+
+    if (newCompleted) {
+       this.playCompleteSound();
+    }
+
+    const updatedTask: Task = {
+      ...task,
+      completed: newCompleted
+    };
+
+    this.taskService.updateTask(task._id, updatedTask).subscribe({
+      next: () => this.loadTasks(),
+      error: () => this.loadTasks()
+    });
+  }
+
+  deleteTask(id?: string): void {
+    if (!id) return;
+
+    this.taskService.deleteTask(id).subscribe(() => {
+      if (this.selectedTask?._id === id) {
+        this.closeSidebar();
+      }
+      this.loadTasks();
+    });
+  }
+
+  addStep(): void {
+    if (!this.selectedTask || !this.selectedTask._id || !this.newStepText.trim()) return;
+
+    const updatedSteps = [...(this.selectedTask.steps || []), this.newStepText.trim()];
+
+    const updatedTask: Task = {
+      ...this.selectedTask,
+      steps: updatedSteps
+    };
+
+    this.selectedTask = updatedTask;
+    this.newStepText = '';
+
+    this.tasks = this.tasks.map(t =>
+      t._id === updatedTask._id ? { ...t, steps: updatedSteps } : t
+    );
+
+    this.taskService.updateTask(updatedTask._id!, updatedTask).subscribe({
+      next: (serverTask) => {
+        this.selectedTask = serverTask;
+        this.loadTasks();
+      },
+      error: () => {
+        this.loadTasks();
+      }
+    });
+  }
+
+  removeStep(index: number): void {
+    if (!this.selectedTask || !this.selectedTask._id || !this.selectedTask.steps) return;
+
+    const updatedSteps = this.selectedTask.steps.filter((_, i) => i !== index);
+
+    const updatedTask: Task = {
+      ...this.selectedTask,
+      steps: updatedSteps
+    };
+
+    this.selectedTask = updatedTask;
+
+    this.tasks = this.tasks.map(t =>
+      t._id === updatedTask._id ? { ...t, steps: updatedSteps } : t
+    );
+
+    this.taskService.updateTask(updatedTask._id!, updatedTask).subscribe({
+      next: (serverTask) => {
+        this.selectedTask = serverTask;
+        this.loadTasks();
+      },
+      error: () => {
+        this.loadTasks();
+      }
+    });
+  }
+
+  saveNotes(): void {
+    if (!this.selectedTask || !this.selectedTask._id) return;
+
+    const updatedTask: Task = {
+      ...this.selectedTask
+    };
+
+    this.tasks = this.tasks.map(t =>
+      t._id === updatedTask._id ? { ...t, notes: updatedTask.notes } : t
+    );
+
+    this.taskService.updateTask(updatedTask._id!, updatedTask).subscribe({
+      next: (serverTask) => {
+        this.selectedTask = serverTask;
+        this.loadTasks();
+      },
+      error: () => {
+        this.loadTasks();
+      }
+    });
+  }
+
+  openTaskDetails(task: Task): void {
+    this.selectedTask = {
+      ...task,
+      steps: task.steps || [],
+      notes: task.notes || ''
+    };
+    this.isSidebarOpen = true;
+    this.newStepText = '';
+  }
+
+  closeSidebar(): void {
+    this.isSidebarOpen = false;
+    this.selectedTask = null;
+    this.newStepText = '';
+  }
+
+  getPriorityLabel(priority: string): string {
+    if (priority === 'high') return 'Високий';
+    if (priority === 'medium') return 'Середній';
+    return 'Низький';
+  }
+
+  getTaskTypeLabel(taskType?: string): string {
+    return taskType === 'team' ? 'Командна' : 'Персональна';
+  }
+
+  get activeTasks(): Task[] {
+    return this.tasks.filter(task => {
+      const categoryMatch =
+        this.filterCategory === 'Усі' || task.category === this.filterCategory;
+
+      return categoryMatch && !task.completed;
+    });
+  }
+
+  get completedTasks(): Task[] {
+    return this.tasks.filter(task => {
+      const categoryMatch =
+        this.filterCategory === 'Усі' || task.category === this.filterCategory;
+
+      return categoryMatch && task.completed;
+    });
+  }
+}

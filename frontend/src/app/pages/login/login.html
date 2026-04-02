@@ -1,0 +1,15 @@
+<div class="login-page">
+  <div class="login-card">
+    <h1>Вхід у систему</h1>
+
+    <input type="text" placeholder="Логін" [(ngModel)]="username" />
+
+    <input type="password" placeholder="Пароль" [(ngModel)]="password" />
+
+    <button (click)="onLogin()">Увійти</button>
+
+    @if (errorMessage) {
+      <p class="error">{{ errorMessage }}</p>
+    }
+  </div>
+</div>

@@ -1,0 +1,209 @@
+<div class="page-card">
+  <h1>Мої задачі</h1>
+
+  <div class="task-create-box">
+    <div class="task-create-top">
+      <span class="task-circle"></span>
+
+      <div class="input-container task-input-wrap">
+        <input type="text" [(ngModel)]="newTaskTitle" required />
+        <label>Додайте завдання</label>
+      </div>
+
+      <button class="main-btn" (click)="addTask()">Додати</button>
+    </div>
+
+    <div class="task-create-bottom">
+      <div class="option-item">
+        <span class="option-icon">📅</span>
+        <input type="date" [(ngModel)]="newTaskDeadline" class="mini-input" />
+      </div>
+
+      <div class="option-item">
+        <span class="option-icon">⚡</span>
+        <select [(ngModel)]="newTaskPriority" class="mini-select">
+          <option value="low">Низький</option>
+          <option value="medium">Середній</option>
+          <option value="high">Високий</option>
+        </select>
+      </div>
+
+      <div class="option-item">
+        <span class="option-icon">👤</span>
+        <select [(ngModel)]="newTaskType" class="mini-select">
+          <option value="personal">Персональна</option>
+          <option value="team">Командна</option>
+        </select>
+      </div>
+
+      <div class="option-item">
+        <span class="option-icon">🏷️</span>
+        <select [(ngModel)]="newTaskCategory" class="mini-select">
+          <option value="Навчання">Навчання</option>
+          <option value="Робота">Робота</option>
+          <option value="Особисте">Особисте</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="filters">
+    <select [(ngModel)]="filterCategory">
+      <option value="Усі">Усі категорії</option>
+      <option value="Навчання">Навчання</option>
+      <option value="Робота">Робота</option>
+      <option value="Особисте">Особисте</option>
+    </select>
+  </div>
+
+  <div class="task-sections">
+    <div class="task-list">
+      <div class="task-card" *ngFor="let task of activeTasks">
+        <div class="task-row">
+          <div
+            class="task-check"
+            [class.completed]="task.completed"
+            (click)="toggleTask(task); $event.stopPropagation()"
+          >
+            @if (task.completed) {
+              <span>✓</span>
+            }
+          </div>
+
+          <div class="task-main" (click)="openTaskDetails(task)">
+            <div class="task-card-top">
+              <h3>{{ task.title }}</h3>
+              <span class="task-status">Активна</span>
+            </div>
+
+            @if (task.deadline) {
+              <p><strong>Дедлайн:</strong> {{ task.deadline | date: 'dd.MM.yyyy' }}</p>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="completed-section">
+      <div class="completed-header" (click)="showCompleted = !showCompleted">
+        <span class="arrow" [class.open]="showCompleted">▶</span>
+        <span class="completed-title">Завершені</span>
+        <span class="completed-count">{{ completedTasks.length }}</span>
+      </div>
+
+      @if (showCompleted) {
+        <div class="task-list completed-list">
+          <div class="task-card completed-card" *ngFor="let task of completedTasks">
+            <div class="task-row">
+              <div
+                class="task-check completed"
+                (click)="toggleTask(task); $event.stopPropagation()"
+              >
+                <span>✓</span>
+              </div>
+
+              <div class="task-main" (click)="openTaskDetails(task)">
+                <div class="task-card-top">
+                  <h3>{{ task.title }}</h3>
+                  <span class="task-status completed">Виконана</span>
+                </div>
+
+                @if (task.deadline) {
+                  <p><strong>Дедлайн:</strong> {{ task.deadline | date: 'dd.MM.yyyy' }}</p>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="sidebar-overlay" *ngIf="isSidebarOpen" (click)="closeSidebar()"></div>
+
+    <div class="task-sidebar" [class.open]="isSidebarOpen">
+      @if (selectedTask) {
+        <div class="sidebar-header">
+          <h2>{{ selectedTask.title }}</h2>
+          <button class="close-btn" (click)="closeSidebar()">✕</button>
+        </div>
+
+        <div class="sidebar-content">
+          <p><strong>Категорія:</strong> {{ selectedTask.category }}</p>
+          <p><strong>Пріоритет:</strong> {{ getPriorityLabel(selectedTask.priority) }}</p>
+          <p><strong>Тип:</strong> {{ getTaskTypeLabel(selectedTask.taskType) }}</p>
+
+          @if (selectedTask.taskType === 'personal') {
+            <p><strong>Власник:</strong> {{ selectedTask.owner }}</p>
+          }
+
+          @if (selectedTask.taskType === 'team') {
+            <p><strong>Команда:</strong> {{ selectedTask.team }}</p>
+          }
+
+          @if (selectedTask.deadline) {
+            <p><strong>Дедлайн:</strong> {{ selectedTask.deadline | date: 'dd.MM.yyyy' }}</p>
+          }
+
+          <p>
+            <strong>Статус:</strong>
+            @if (selectedTask.completed) {
+              <span class="done">Виконана</span>
+            } @else {
+              <span>Активна</span>
+            }
+          </p>
+
+          <div class="sidebar-block">
+            <h3>Додати крок</h3>
+
+            <div class="step-input-row">
+              <input
+                type="text"
+                [(ngModel)]="newStepText"
+                placeholder="Введіть крок"
+                class="step-input"
+              />
+              <button class="small-btn" (click)="addStep()">Додати</button>
+            </div>
+
+            @if (selectedTask.steps?.length) {
+              <div class="steps-list">
+                <div class="step-item" *ngFor="let step of selectedTask.steps; let i = index">
+                  <span>{{ step }}</span>
+                  <button class="remove-step-btn" (click)="removeStep(i)">✕</button>
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="sidebar-block">
+            <h3>Нотатки</h3>
+            <textarea
+              [(ngModel)]="selectedTask.notes"
+              (blur)="saveNotes()"
+              placeholder="Додайте нотатку..."
+              class="notes-area"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="sidebar-actions">
+          <button (click)="$event.stopPropagation(); toggleTask(selectedTask)">
+            @if (selectedTask.completed) {
+              Позначити як активну
+            } @else {
+              Позначити як виконану
+            }
+          </button>
+
+          <button
+            class="delete-btn"
+            (click)="$event.stopPropagation(); deleteTask(selectedTask._id)"
+          >
+            Видалити
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</div>

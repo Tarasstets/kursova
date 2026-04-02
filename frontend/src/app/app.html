@@ -1,0 +1,29 @@
+@if (authService.isLoggedIn()) {
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Productivity</h2>
+
+      <div class="user-info">
+        <p><strong>Користувач:</strong> {{ user?.username }}</p>
+        <p><strong>Роль:</strong> {{ user?.role }}</p>
+      </div>
+
+      <nav>
+        <a routerLink="/tasks" routerLinkActive="active">Задачі</a>
+        <a routerLink="/analytics" routerLinkActive="active">Аналітика</a>
+
+        @if (user?.role === 'admin') {
+          <a routerLink="/admin" routerLinkActive="active">Адмін-панель</a>
+        }
+      </nav>
+
+      <button (click)="logout()">Вийти</button>
+    </aside>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+} @else {
+  <router-outlet></router-outlet>
+}
