@@ -3,21 +3,21 @@
     <aside class="sidebar">
       <h2>Productivity</h2>
 
-      <div class="user-info">
-        <p><strong>Користувач:</strong> {{ user?.username }}</p>
-        <p><strong>Роль:</strong> {{ user?.role }}</p>
-      </div>
-
-      <nav>
+      <nav class="nav">
         <a routerLink="/tasks" routerLinkActive="active">Задачі</a>
         <a routerLink="/analytics" routerLinkActive="active">Аналітика</a>
 
         @if (user?.role === 'admin') {
           <a routerLink="/admin" routerLinkActive="active">Адмін-панель</a>
         }
+        <a routerLink="/settings" routerLinkActive="active">⚙ Налаштування</a>
       </nav>
 
-      <button (click)="logout()">Вийти</button>
+      <div class="sidebar-footer">
+        <button class="logout-btn" (click)="logout()">Вийти</button>
+
+        <div class="user-icon" routerLink="/settings">👤</div>
+      </div>
     </aside>
 
     <main class="content">
