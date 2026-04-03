@@ -16,13 +16,13 @@ export class TasksComponent implements OnInit {
   newStepText = '';
 
   newTaskTitle = '';
-  newTaskCategory = 'Навчання';
+  newTaskCategory = 'Learning';
   newTaskPriority: 'low' | 'medium' | 'high' = 'medium';
   newTaskDeadline = '';
   newTaskType: 'personal' | 'shared' = 'personal';
   newTaskAssignee = '';
 
-  filterCategory = 'Усі';
+  filterCategory = 'All';
   showCompleted = false;
 
   currentUser: any = null;
@@ -86,7 +86,7 @@ export class TasksComponent implements OnInit {
 
     this.taskService.addTask(task).subscribe(() => {
       this.newTaskTitle = '';
-      this.newTaskCategory = 'Навчання';
+      this.newTaskCategory = 'Learning';
       this.newTaskPriority = 'medium';
       this.newTaskDeadline = '';
       this.newTaskType = 'personal';
@@ -99,7 +99,7 @@ export class TasksComponent implements OnInit {
     const audio = new Audio('/sounds/complete.wav');
     audio.volume = 1;
     audio.play().catch(err => {
-      console.log('Помилка відтворення звуку:', err);
+      console.log('Error playing sound:', err);
     });
   }
 
@@ -243,14 +243,14 @@ export class TasksComponent implements OnInit {
   }
 
   openTaskDetails(task: Task): void {
-  this.selectedTask = {
-    ...task,
-    steps: this.normalizeSteps(task.steps || []),
-    notes: task.notes || ''
-  };
-  this.isSidebarOpen = true;
-  this.newStepText = '';
-}
+    this.selectedTask = {
+      ...task,
+      steps: task.steps || [],
+      notes: task.notes || ''
+    };
+    this.isSidebarOpen = true;
+    this.newStepText = '';
+  }
 
   closeSidebar(): void {
     this.isSidebarOpen = false;
@@ -259,19 +259,19 @@ export class TasksComponent implements OnInit {
   }
 
   getPriorityLabel(priority: string): string {
-    if (priority === 'high') return 'Високий';
-    if (priority === 'medium') return 'Середній';
-    return 'Низький';
+    if (priority === 'high') return 'High';
+    if (priority === 'medium') return 'Medium';
+    return 'Low';
   }
 
   getTaskTypeLabel(taskType?: string): string {
-    return taskType === 'shared' ? 'Спільна' : 'Персональна';
+    return taskType === 'shared' ? 'Shared' : 'Personal';
   }
 
   get activeTasks(): Task[] {
     return this.tasks.filter(task => {
       const categoryMatch =
-        this.filterCategory === 'Усі' || task.category === this.filterCategory;
+        this.filterCategory === 'All' || task.category === this.filterCategory;
 
       return categoryMatch && !task.completed;
     });
@@ -280,7 +280,7 @@ export class TasksComponent implements OnInit {
   get completedTasks(): Task[] {
     return this.tasks.filter(task => {
       const categoryMatch =
-        this.filterCategory === 'Усі' || task.category === this.filterCategory;
+        this.filterCategory === 'All' || task.category === this.filterCategory;
 
       return categoryMatch && task.completed;
     });

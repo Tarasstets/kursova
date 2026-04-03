@@ -28,7 +28,7 @@ export class LoginComponent {
         this.router.navigate(['/tasks']);
       },
       error: () => {
-        this.errorMessage = 'Невірний логін або пароль';
+        this.errorMessage = 'Invalid login or password';
       }
     });
     }

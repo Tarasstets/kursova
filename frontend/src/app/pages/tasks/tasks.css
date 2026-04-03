@@ -22,7 +22,7 @@ body {
     color: #222;
 }
 
-/* Блок створення задачі */
+/* Task creation block */
 .task-create-box {
     background: #fff;
     border: 1px solid #e5e7eb;
@@ -90,7 +90,7 @@ body {
     font-weight: 500;
 }
 
-/* Нижня панель */
+/* Bottom panel */
 .task-create-bottom {
     display: flex;
     align-items: center;
@@ -123,7 +123,7 @@ body {
     padding: 4px 0;
 }
 
-/* Кнопка */
+/* Button */
 .main-btn {
     background: #f3f4f6;
     color: #9ca3af;
@@ -141,7 +141,7 @@ body {
     color: #555;
 }
 
-/* Фільтри */
+/* Filters */
 .filters {
     display: flex;
     gap: 12px;
@@ -158,7 +158,7 @@ body {
     cursor: pointer;
 }
 
-/* Список задач */
+/* Task list */
 .task-list {
     display: grid;
     gap: 14px;
@@ -534,7 +534,7 @@ body {
     flex: 1;
 }
 
-/* ===== Кастомний вигляд select (крім date) ===== */
+/* ===== Custom select appearance (except date) ===== */
 select:not([type="date"]) {
     appearance: none;
     -webkit-appearance: none;
@@ -554,7 +554,7 @@ select:not([type="date"]) {
     transition: 0.3s;
 }
 
-/* стрілка */
+/* arrow */
 select:not([type="date"]) {
     background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='10' viewBox='0 0 20 20' width='10' xmlns='http://www.w3.org/2000/svg'><path d='M5 7l5 5 5-5z'/></svg>");
     background-repeat: no-repeat;

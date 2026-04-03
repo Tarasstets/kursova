@@ -22,13 +22,13 @@ export class AnalyticsComponent implements OnInit {
   barChartType: ChartType = 'bar';
 
   pieChartData: ChartConfiguration<'pie'>['data'] = {
-    labels: ['Навчання', 'Робота', 'Особисте'],
+    labels: ['Learning', 'Work', 'Personal'],
     datasets: [{ data: [0, 0, 0] }]
   };
 
   barChartData: ChartConfiguration<'bar'>['data'] = {
-    labels: ['Активні', 'Виконані'],
-    datasets: [{ label: 'Кількість задач', data: [0, 0] }]
+    labels: ['Active', 'Completed'],
+    datasets: [{ label: 'Tasks Count', data: [0, 0] }]
   };
 
   currentUser: any = null;
@@ -57,20 +57,20 @@ export class AnalyticsComponent implements OnInit {
             this.activeTasks = data.filter(task => !task.completed).length;
             this.completedTasks = data.filter(task => task.completed).length;
 
-            const studyCount = data.filter(task => task.category === 'Навчання').length;
-            const workCount = data.filter(task => task.category === 'Робота').length;
-            const personalCount = data.filter(task => task.category === 'Особисте').length;
+            const studyCount = data.filter(task => task.category === 'Learning').length;
+            const workCount = data.filter(task => task.category === 'Work').length;
+            const personalCount = data.filter(task => task.category === 'Personal').length;
 
             this.pieChartData = {
-              labels: ['Навчання', 'Робота', 'Особисте'],
+              labels: ['Learning', 'Work', 'Personal'],
               datasets: [{ data: [studyCount, workCount, personalCount] }]
             };
 
             this.barChartData = {
-              labels: ['Активні', 'Виконані'],
+              labels: ['Active', 'Completed'],
               datasets: [
                 {
-                  label: 'Кількість задач',
+                  label: 'Tasks Count',
                   data: [this.activeTasks, this.completedTasks]
                 }
               ]

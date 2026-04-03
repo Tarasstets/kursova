@@ -1,15 +1,15 @@
 <div class="login-page">
   <div class="login-card">
-    <h1>Вхід у систему</h1>
+    <h1>Login</h1>
 
-    <input type="text" placeholder="Логін" [(ngModel)]="username" />
+    <input type="text" placeholder="Login" [(ngModel)]="username" />
 
-    <input type="password" placeholder="Пароль" [(ngModel)]="password" />
+    <input type="password" placeholder="Password" [(ngModel)]="password" />
 
-    <button (click)="onLogin()">Увійти</button>
+    <button (click)="onLogin()">Login</button>
     <p class="auth-text">
-      Немає акаунта?
-      <span class="auth-link" (click)="goToRegister()"> Зареєструватись </span>
+      Don't have an account?
+      <span class="auth-link" (click)="goToRegister()"> Register </span>
     </p>
     @if (errorMessage) {
       <p class="error">{{ errorMessage }}</p>

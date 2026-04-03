@@ -4,17 +4,17 @@
       <h2>Productivity</h2>
 
       <nav class="nav">
-        <a routerLink="/tasks" routerLinkActive="active">Задачі</a>
-        <a routerLink="/analytics" routerLinkActive="active">Аналітика</a>
+        <a routerLink="/tasks" routerLinkActive="active">Tasks</a>
+        <a routerLink="/analytics" routerLinkActive="active">Analytics</a>
 
         @if (user?.role === 'admin') {
-          <a routerLink="/admin" routerLinkActive="active">Адмін-панель</a>
+          <a routerLink="/admin" routerLinkActive="active">Admin Panel</a>
         }
-        <a routerLink="/settings" routerLinkActive="active">⚙ Налаштування</a>
+        <a routerLink="/settings" routerLinkActive="active">⚙ Settings</a>
       </nav>
 
       <div class="sidebar-footer">
-        <button class="logout-btn" (click)="logout()">Вийти</button>
+        <button class="logout-btn" (click)="logout()">Logout</button>
 
         <div class="user-icon" routerLink="/settings">👤</div>
       </div>
