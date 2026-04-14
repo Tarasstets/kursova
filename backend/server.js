@@ -73,20 +73,26 @@ const Task = mongoose.model("Task", taskSchema);
 
 app.get("/api/tasks", async (req, res) => {
   try {
-    const { username } = req.query;
+    const { username, role } = req.query;
 
-    const tasks = await Task.find({
-      $or: [
-        {
-          taskType: "personal",
-          owner: username,
-        },
-        {
-          taskType: "shared",
-          $or: [{ owner: username }, { sharedWith: username }],
-        },
-      ],
-    }).sort({ createdAt: -1 });
+    let tasks;
+
+    if (role === "admin") {
+      tasks = await Task.find().sort({ createdAt: -1 });
+    } else {
+      tasks = await Task.find({
+        $or: [
+          {
+            taskType: "personal",
+            owner: username,
+          },
+          {
+            taskType: "shared",
+            $or: [{ owner: username }, { sharedWith: username }],
+          },
+        ],
+      }).sort({ createdAt: -1 });
+    }
 
     res.json(tasks);
   } catch (error) {

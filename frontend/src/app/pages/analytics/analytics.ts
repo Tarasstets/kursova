@@ -47,7 +47,7 @@ export class AnalyticsComponent implements OnInit {
 
     if (!this.currentUser) return;
 
-    this.taskService.getTasks(this.currentUser.username).subscribe({
+    this.taskService.getTasks(this.currentUser.username, this.currentUser.role).subscribe({
       next: (data) => {
         this.ngZone.run(() => {
           this.tasks = data;

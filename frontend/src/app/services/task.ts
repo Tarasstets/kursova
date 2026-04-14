@@ -30,9 +30,9 @@ export class TaskService {
 
   constructor(private http: HttpClient) {}
 
-  getTasks(username: string): Observable<Task[]> {
-    return this.http.get<Task[]>(`${this.apiUrl}?username=${username}`);
-  }
+  getTasks(username: string, role: string): Observable<Task[]> {
+  return this.http.get<Task[]>(`${this.apiUrl}?username=${username}&role=${role}`);
+}
 
   addTask(task: Task): Observable<Task> {
     return this.http.post<Task>(this.apiUrl, task);

@@ -46,22 +46,22 @@ export class TasksComponent implements OnInit {
   }
 
   loadTasks(): void {
-    if (!this.currentUser) return;
+  if (!this.currentUser) return;
 
-    this.taskService
-      .getTasks(this.currentUser.username)
-      .subscribe(data => {
-        this.tasks = data;
-        this.cdr.detectChanges();
+  this.taskService
+    .getTasks(this.currentUser.username, this.currentUser.role)
+    .subscribe(data => {
+      this.tasks = data;
+      this.cdr.detectChanges();
 
-        if (this.selectedTask?._id) {
-          const updatedSelectedTask = this.tasks.find(
-            t => t._id === this.selectedTask?._id
-          );
-          this.selectedTask = updatedSelectedTask || null;
-        }
-      });
-  }
+      if (this.selectedTask?._id) {
+        const updatedSelectedTask = this.tasks.find(
+          t => t._id === this.selectedTask?._id
+        );
+        this.selectedTask = updatedSelectedTask || null;
+      }
+    });
+}
 
   addTask(): void {
     if (!this.newTaskTitle.trim() || !this.currentUser) return;
