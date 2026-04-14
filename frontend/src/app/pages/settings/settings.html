@@ -3,14 +3,21 @@
 
   <div class="settings-card">
     <h3>User Data</h3>
-    <p><strong>Login:</strong> Admin</p>
-    <p><strong>Email:</strong> admin@example.com</p>
-    <p><strong>Role:</strong> admin</p>
+    <p><strong>Login:</strong> {{ currentUser?.username || 'Немає login' }}</p>
+    <p><strong>Email:</strong> {{ currentUser?.email || 'Немає email' }}</p>
+    <p><strong>Role:</strong> {{ currentUser?.role || 'Немає role' }}</p>
+    <p><strong>Team:</strong> {{ currentUser?.team || 'Немає team' }}</p>
   </div>
 
   <div class="settings-card">
     <h3>Settings</h3>
-    <p><strong>Theme:</strong> Light</p>
-    <p><strong>Notifications:</strong> Enabled</p>
+
+    <div class="toggle-row">
+      <span>Dark Mode</span>
+      <label class="switch">
+        <input type="checkbox" [checked]="isDarkMode" (change)="toggleDarkMode($event)" />
+        <span class="slider"></span>
+      </label>
+    </div>
   </div>
 </div>

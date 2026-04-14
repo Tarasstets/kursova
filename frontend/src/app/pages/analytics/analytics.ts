@@ -22,7 +22,7 @@ export class AnalyticsComponent implements OnInit {
   barChartType: ChartType = 'bar';
 
   pieChartData: ChartConfiguration<'pie'>['data'] = {
-    labels: ['Learning', 'Work', 'Personal'],
+    labels: ['Learning', 'Робота', 'Особисте'],
     datasets: [{ data: [0, 0, 0] }]
   };
 
@@ -47,41 +47,39 @@ export class AnalyticsComponent implements OnInit {
 
     if (!this.currentUser) return;
 
-    this.taskService
-      .getTasks(this.currentUser.username)
-      .subscribe({
-        next: (data) => {
-          this.ngZone.run(() => {
-            this.tasks = data;
-            this.totalTasks = data.length;
-            this.activeTasks = data.filter(task => !task.completed).length;
-            this.completedTasks = data.filter(task => task.completed).length;
+    this.taskService.getTasks(this.currentUser.username).subscribe({
+      next: (data) => {
+        this.ngZone.run(() => {
+          this.tasks = data;
+          this.totalTasks = data.length;
+          this.activeTasks = data.filter(task => !task.completed).length;
+          this.completedTasks = data.filter(task => task.completed).length;
 
-            const studyCount = data.filter(task => task.category === 'Learning').length;
-            const workCount = data.filter(task => task.category === 'Work').length;
-            const personalCount = data.filter(task => task.category === 'Personal').length;
+          const studyCount = data.filter(task => task.category === 'Learning').length;
+const workCount = data.filter(task => task.category === 'Work').length;
+const personalCount = data.filter(task => task.category === 'Personal').length;
 
-            this.pieChartData = {
-              labels: ['Learning', 'Work', 'Personal'],
-              datasets: [{ data: [studyCount, workCount, personalCount] }]
-            };
+this.pieChartData = {
+  labels: ['Learning', 'Work', 'Personal'],
+  datasets: [{ data: [studyCount, workCount, personalCount] }]
+};
 
-            this.barChartData = {
-              labels: ['Active', 'Completed'],
-              datasets: [
-                {
-                  label: 'Tasks Count',
-                  data: [this.activeTasks, this.completedTasks]
-                }
-              ]
-            };
+          this.barChartData = {
+            labels: ['Active', 'Completed'],
+            datasets: [
+              {
+                label: 'Tasks Count',
+                data: [this.activeTasks, this.completedTasks]
+              }
+            ]
+          };
 
-            this.cdr.detectChanges();
-          });
-        },
-        error: (err) => {
-          console.error('ANALYTICS ERROR:', err);
-        }
-      });
+          this.cdr.detectChanges();
+        });
+      },
+      error: (err) => {
+        console.error('ANALYTICS ERROR:', err);
+      }
+    });
   }
 }

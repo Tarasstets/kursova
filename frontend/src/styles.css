@@ -1,0 +1,19 @@
+body.dark {
+    background-color: #121212;
+    color: white;
+}
+
+body.dark .settings-page h2 {
+    color: white;
+}
+
+body.dark .settings-card {
+    background: #1e1e1e;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.dark .settings-card h3,
+body.dark .settings-card p,
+body.dark .settings-card strong {
+    color: white;
+}
