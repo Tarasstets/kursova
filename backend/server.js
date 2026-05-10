@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const authRoutes = require("./routes/auth");
+const authMiddleware = require("./middleware/authMiddleware");
 
 const app = express();
 const PORT = 3000;
@@ -71,7 +72,7 @@ const taskSchema = new mongoose.Schema({
 
 const Task = mongoose.model("Task", taskSchema);
 
-app.get("/api/tasks", async (req, res) => {
+app.get("/api/tasks", authMiddleware, async (req, res) => {
   try {
     const { username, role } = req.query;
 
@@ -101,7 +102,7 @@ app.get("/api/tasks", async (req, res) => {
   }
 });
 
-app.post("/api/tasks", async (req, res) => {
+app.post("/api/tasks", authMiddleware, async (req, res) => {
   try {
     console.log("BODY:", req.body);
 
@@ -126,7 +127,7 @@ app.post("/api/tasks", async (req, res) => {
   }
 });
 
-app.put("/api/tasks/:id", async (req, res) => {
+app.put("/api/tasks/:id", authMiddleware, async (req, res) => {
   try {
     console.log("UPDATE BODY:", req.body);
     const updatedTask = await Task.findByIdAndUpdate(
@@ -155,7 +156,7 @@ app.put("/api/tasks/:id", async (req, res) => {
   }
 });
 
-app.delete("/api/tasks/:id", async (req, res) => {
+app.delete("/api/tasks/:id", authMiddleware, async (req, res) => {
   try {
     await Task.findByIdAndDelete(req.params.id);
     res.json({ message: "Задачу видалено" });

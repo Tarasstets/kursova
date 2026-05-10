@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface Step {
@@ -30,19 +30,49 @@ export class TaskService {
 
   constructor(private http: HttpClient) {}
 
+  private getHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token') || '';
+
+    return new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+  }
+
   getTasks(username: string, role: string): Observable<Task[]> {
-  return this.http.get<Task[]>(`${this.apiUrl}?username=${username}&role=${role}`);
-}
+    return this.http.get<Task[]>(
+      `${this.apiUrl}?username=${username}&role=${role}`,
+      {
+        headers: this.getHeaders()
+      }
+    );
+  }
 
   addTask(task: Task): Observable<Task> {
-    return this.http.post<Task>(this.apiUrl, task);
+    return this.http.post<Task>(
+      this.apiUrl,
+      task,
+      {
+        headers: this.getHeaders()
+      }
+    );
   }
 
   updateTask(id: string, task: Task): Observable<Task> {
-    return this.http.put<Task>(`${this.apiUrl}/${id}`, task);
+    return this.http.put<Task>(
+      `${this.apiUrl}/${id}`,
+      task,
+      {
+        headers: this.getHeaders()
+      }
+    );
   }
 
   deleteTask(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(
+      `${this.apiUrl}/${id}`,
+      {
+        headers: this.getHeaders()
+      }
+    );
   }
 }

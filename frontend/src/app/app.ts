@@ -24,4 +24,9 @@ export class App {
   get user() {
     return this.authService.getUser();
   }
+
+   hideSidebar(): boolean {
+    return this.router.url === '/login' || this.router.url === '/register';
+  }
+
 }
