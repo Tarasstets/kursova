@@ -1,32 +1,50 @@
 <div class="page-card">
-  <h1>Analytics</h1>
+  <h1>{{ languageService.currentLanguage === 'ua' ? 'Аналітика' : 'Analytics' }}</h1>
 
   <div class="stats-grid">
     <div class="stat-box">
-      <h3>Total Tasks</h3>
+      <h3>{{ languageService.currentLanguage === 'ua' ? 'Усього задач' : 'Total Tasks' }}</h3>
       <p>{{ totalTasks }}</p>
     </div>
 
     <div class="stat-box">
-      <h3>Active</h3>
+      <h3>{{ languageService.currentLanguage === 'ua' ? 'Активні' : 'Active' }}</h3>
       <p>{{ activeTasks }}</p>
     </div>
 
     <div class="stat-box">
-      <h3>Completed</h3>
+      <h3>{{ languageService.currentLanguage === 'ua' ? 'Виконані' : 'Completed' }}</h3>
       <p>{{ completedTasks }}</p>
     </div>
   </div>
 
   <div class="charts">
     <div class="chart-box">
-      <h3>Tasks Distribution by Categories</h3>
-      <canvas baseChart [data]="pieChartData" [type]="pieChartType"> </canvas>
+      <h3>
+        {{
+          languageService.currentLanguage === 'ua'
+            ? 'Розподіл задач за категоріями'
+            : 'Tasks Distribution by Categories'
+        }}
+      </h3>
+
+      <div class="pie-wrapper">
+        <canvas baseChart [data]="pieChartData" [type]="pieChartType"></canvas>
+      </div>
     </div>
 
     <div class="chart-box">
-      <h3>Active and Completed Tasks</h3>
-      <canvas baseChart [data]="barChartData" [type]="barChartType"> </canvas>
+      <h3>
+        {{
+          languageService.currentLanguage === 'ua'
+            ? 'Активні та виконані задачі'
+            : 'Active and Completed Tasks'
+        }}
+      </h3>
+
+      <div class="bar-wrapper">
+        <canvas baseChart [data]="barChartData" [type]="barChartType"></canvas>
+      </div>
     </div>
   </div>
 </div>

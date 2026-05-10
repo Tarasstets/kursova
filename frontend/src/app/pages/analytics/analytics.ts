@@ -3,6 +3,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, ChartType, registerables } from 'chart.js';
 import { Task, TaskService } from '../../services/task';
 import { AuthService } from '../../services/auth.service';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-analytics',
@@ -22,13 +23,13 @@ export class AnalyticsComponent implements OnInit {
   barChartType: ChartType = 'bar';
 
   pieChartData: ChartConfiguration<'pie'>['data'] = {
-    labels: ['Learning', 'Робота', 'Особисте'],
+    labels: [],
     datasets: [{ data: [0, 0, 0] }]
   };
 
   barChartData: ChartConfiguration<'bar'>['data'] = {
-    labels: ['Active', 'Completed'],
-    datasets: [{ label: 'Tasks Count', data: [0, 0] }]
+    labels: [],
+    datasets: [{ label: '', data: [0, 0] }]
   };
 
   currentUser: any = null;
@@ -37,7 +38,8 @@ export class AnalyticsComponent implements OnInit {
     private taskService: TaskService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    public languageService: LanguageService
   ) {
     Chart.register(...registerables);
   }
@@ -51,24 +53,35 @@ export class AnalyticsComponent implements OnInit {
       next: (data) => {
         this.ngZone.run(() => {
           this.tasks = data;
+
           this.totalTasks = data.length;
           this.activeTasks = data.filter(task => !task.completed).length;
           this.completedTasks = data.filter(task => task.completed).length;
 
-          const studyCount = data.filter(task => task.category === 'Learning').length;
-const workCount = data.filter(task => task.category === 'Work').length;
-const personalCount = data.filter(task => task.category === 'Personal').length;
+          const learningCount = data.filter(task => task.category === 'Learning').length;
+          const workCount = data.filter(task => task.category === 'Work').length;
+          const personalCount = data.filter(task => task.category === 'Personal').length;
 
-this.pieChartData = {
-  labels: ['Learning', 'Work', 'Personal'],
-  datasets: [{ data: [studyCount, workCount, personalCount] }]
-};
+          const isUa = this.languageService.currentLanguage === 'ua';
 
-          this.barChartData = {
-            labels: ['Active', 'Completed'],
+          this.pieChartData = {
+            labels: isUa
+              ? ['Навчання', 'Робота', 'Особисте']
+              : ['Learning', 'Work', 'Personal'],
             datasets: [
               {
-                label: 'Tasks Count',
+                data: [learningCount, workCount, personalCount]
+              }
+            ]
+          };
+
+          this.barChartData = {
+            labels: isUa
+              ? ['Активні', 'Виконані']
+              : ['Active', 'Completed'],
+            datasets: [
+              {
+                label: isUa ? 'Кількість задач' : 'Tasks Count',
                 data: [this.activeTasks, this.completedTasks]
               }
             ]

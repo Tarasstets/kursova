@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { NgFor, NgIf, DatePipe } from '@angular/common';
 import { Task, TaskService } from '../../services/task';
 import { AuthService } from '../../services/auth.service';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-tasks',
@@ -35,7 +36,8 @@ export class TasksComponent implements OnInit {
   constructor(
     private taskService: TaskService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public languageService: LanguageService
   ) {}
 
   ngOnInit(): void {

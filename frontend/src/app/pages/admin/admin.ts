@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-admin',
@@ -6,4 +7,6 @@ import { Component } from '@angular/core';
   templateUrl: './admin.html',
   styleUrl: './admin.css'
 })
-export class AdminComponent {}
+export class AdminComponent {
+  constructor(public languageService: LanguageService) {}
+}

@@ -1,8 +1,9 @@
 <div class="settings-page">
-  <h2>Settings</h2>
+  <h2>{{ selectedLanguage === 'ua' ? 'Налаштування' : 'Settings' }}</h2>
 
   <div class="settings-card">
-    <h3>User Data</h3>
+    <h3>{{ selectedLanguage === 'ua' ? 'Дані користувача' : 'User Data' }}</h3>
+
     <p><strong>Login:</strong> {{ currentUser?.username || 'Немає login' }}</p>
     <p><strong>Email:</strong> {{ currentUser?.email || 'Немає email' }}</p>
     <p><strong>Role:</strong> {{ currentUser?.role || 'Немає role' }}</p>
@@ -10,14 +11,32 @@
   </div>
 
   <div class="settings-card">
-    <h3>Settings</h3>
+    <h3>{{ selectedLanguage === 'ua' ? 'Параметри' : 'Settings' }}</h3>
 
     <div class="toggle-row">
-      <span>Dark Mode</span>
+      <span>{{ selectedLanguage === 'ua' ? 'Темний режим' : 'Dark Mode' }}</span>
+
       <label class="switch">
         <input type="checkbox" [checked]="isDarkMode" (change)="toggleDarkMode($event)" />
         <span class="slider"></span>
       </label>
+    </div>
+  </div>
+
+  <div class="settings-card">
+    <h3>{{ selectedLanguage === 'ua' ? 'Мова' : 'Language' }}</h3>
+    <p>
+      {{ selectedLanguage === 'ua' ? 'Оберіть мову інтерфейсу' : 'Choose interface language' }}
+    </p>
+
+    <div class="language-buttons">
+      <button [class.active]="selectedLanguage === 'en'" (click)="changeLanguage('en')">
+        English
+      </button>
+
+      <button [class.active]="selectedLanguage === 'ua'" (click)="changeLanguage('ua')">
+        Українська
+      </button>
     </div>
   </div>
 </div>

@@ -1,5 +1,5 @@
 <div class="page-card">
-  <h1>My Tasks</h1>
+  <h1>{{ languageService.currentLanguage === 'ua' ? 'Мої задачі' : 'My Tasks' }}</h1>
 
   <div class="task-create-box">
     <div class="task-create-top">
@@ -7,10 +7,14 @@
 
       <div class="input-container task-input-wrap">
         <input type="text" [(ngModel)]="newTaskTitle" required />
-        <label>Add Task</label>
+        <label>
+          {{ languageService.currentLanguage === 'ua' ? 'Додати задачу' : 'Add Task' }}
+        </label>
       </div>
 
-      <button class="main-btn" (click)="addTask()">Add Task</button>
+      <button class="main-btn" (click)="addTask()">
+        {{ languageService.currentLanguage === 'ua' ? 'Додати' : 'Add Task' }}
+      </button>
     </div>
 
     <div class="task-create-bottom">
@@ -22,30 +26,47 @@
       <div class="option-item">
         <span class="option-icon">⚡</span>
         <select [(ngModel)]="newTaskPriority" class="mini-select">
-          <option value="low">low</option>
-          <option value="medium">medium</option>
-          <option value="high">high</option>
+          <option value="low">
+            {{ languageService.currentLanguage === 'ua' ? 'низький' : 'low' }}
+          </option>
+          <option value="medium">
+            {{ languageService.currentLanguage === 'ua' ? 'середній' : 'medium' }}
+          </option>
+          <option value="high">
+            {{ languageService.currentLanguage === 'ua' ? 'високий' : 'high' }}
+          </option>
         </select>
       </div>
 
       <div class="option-item">
         <span class="option-icon">👤</span>
         <select [(ngModel)]="newTaskType" class="mini-select">
-          <option value="personal">Personal</option>
-          <option value="shared">Team</option>
+          <option value="personal">
+            {{ languageService.currentLanguage === 'ua' ? 'Особиста' : 'Personal' }}
+          </option>
+          <option value="shared">
+            {{ languageService.currentLanguage === 'ua' ? 'Командна' : 'Team' }}
+          </option>
         </select>
       </div>
 
       <div class="option-item">
         <span class="option-icon">🏷️</span>
         <select [(ngModel)]="newTaskCategory" class="mini-select">
-          <option value="Learning">Learning</option>
-          <option value="Work">Work</option>
-          <option value="Personal">Personal</option>
+          <option value="Learning">
+            {{ languageService.currentLanguage === 'ua' ? 'Навчання' : 'Learning' }}
+          </option>
+          <option value="Work">
+            {{ languageService.currentLanguage === 'ua' ? 'Робота' : 'Work' }}
+          </option>
+          <option value="Personal">
+            {{ languageService.currentLanguage === 'ua' ? 'Особисте' : 'Personal' }}
+          </option>
         </select>
       </div>
     </div>
   </div>
+
   @if (newTaskType === 'shared') {
     <div class="option-item">
       <span class="option-icon">👥</span>
@@ -53,17 +74,27 @@
         type="text"
         [(ngModel)]="newTaskAssignee"
         class="mini-input"
-        placeholder="User login"
+        [placeholder]="
+          languageService.currentLanguage === 'ua' ? 'Логін користувача' : 'User login'
+        "
       />
     </div>
   }
 
   <div class="filters">
     <select [(ngModel)]="filterCategory">
-      <option value="All">All categories</option>
-      <option value="Learning">Learning</option>
-      <option value="Work">Work</option>
-      <option value="Personal">Personal</option>
+      <option value="All">
+        {{ languageService.currentLanguage === 'ua' ? 'Усі категорії' : 'All categories' }}
+      </option>
+      <option value="Learning">
+        {{ languageService.currentLanguage === 'ua' ? 'Навчання' : 'Learning' }}
+      </option>
+      <option value="Work">
+        {{ languageService.currentLanguage === 'ua' ? 'Робота' : 'Work' }}
+      </option>
+      <option value="Personal">
+        {{ languageService.currentLanguage === 'ua' ? 'Особисте' : 'Personal' }}
+      </option>
     </select>
   </div>
 
@@ -84,11 +115,18 @@
           <div class="task-main" (click)="openTaskDetails(task)">
             <div class="task-card-top">
               <h3>{{ task.title }}</h3>
-              <span class="task-status">Active</span>
+              <span class="task-status">
+                {{ languageService.currentLanguage === 'ua' ? 'Активна' : 'Active' }}
+              </span>
             </div>
 
             @if (task.deadline) {
-              <p><strong>Deadline:</strong> {{ task.deadline | date: 'dd.MM.yyyy' }}</p>
+              <p>
+                <strong>{{
+                  languageService.currentLanguage === 'ua' ? 'Дедлайн:' : 'Deadline:'
+                }}</strong>
+                {{ task.deadline | date: 'dd.MM.yyyy' }}
+              </p>
             }
           </div>
         </div>
@@ -98,7 +136,9 @@
     <div class="completed-section">
       <div class="completed-header" (click)="showCompleted = !showCompleted">
         <span class="arrow" [class.open]="showCompleted">▶</span>
-        <span class="completed-title">Completed</span>
+        <span class="completed-title">
+          {{ languageService.currentLanguage === 'ua' ? 'Виконані' : 'Completed' }}
+        </span>
         <span class="completed-count">{{ completedTasks.length }}</span>
       </div>
 
@@ -116,11 +156,18 @@
               <div class="task-main" (click)="openTaskDetails(task)">
                 <div class="task-card-top">
                   <h3>{{ task.title }}</h3>
-                  <span class="task-status completed">Completed</span>
+                  <span class="task-status completed">
+                    {{ languageService.currentLanguage === 'ua' ? 'Виконана' : 'Completed' }}
+                  </span>
                 </div>
 
                 @if (task.deadline) {
-                  <p><strong>Deadline:</strong> {{ task.deadline | date: 'dd.MM.yyyy' }}</p>
+                  <p>
+                    <strong>{{
+                      languageService.currentLanguage === 'ua' ? 'Дедлайн:' : 'Deadline:'
+                    }}</strong>
+                    {{ task.deadline | date: 'dd.MM.yyyy' }}
+                  </p>
                 }
               </div>
             </div>
@@ -139,21 +186,50 @@
         </div>
 
         <div class="sidebar-content">
-          <p><strong>Author:</strong> {{ selectedTask.owner }}</p>
-          <p><strong>Category:</strong> {{ selectedTask.category }}</p>
-          <p><strong>Priority:</strong> {{ getPriorityLabel(selectedTask.priority) }}</p>
           <p>
-            <strong>Status:</strong>
+            <strong>{{ languageService.currentLanguage === 'ua' ? 'Автор:' : 'Author:' }}</strong>
+            {{ selectedTask.owner }}
+          </p>
+          <p>
+            <strong>{{
+              languageService.currentLanguage === 'ua' ? 'Категорія:' : 'Category:'
+            }}</strong>
+            {{ selectedTask.category }}
+          </p>
+          <p>
+            <strong>{{
+              languageService.currentLanguage === 'ua' ? 'Пріоритет:' : 'Priority:'
+            }}</strong>
+            {{ getPriorityLabel(selectedTask.priority) }}
+          </p>
+
+          <p>
+            <strong>{{ languageService.currentLanguage === 'ua' ? 'Статус:' : 'Status:' }}</strong>
             @if (selectedTask.completed) {
-              <span class="done">Completed</span>
+              <span class="done">{{
+                languageService.currentLanguage === 'ua' ? 'Виконана' : 'Completed'
+              }}</span>
             } @else {
-              <span>Active</span>
+              <span>{{ languageService.currentLanguage === 'ua' ? 'Активна' : 'Active' }}</span>
             }
           </p>
-          <p><strong>Type:</strong> {{ getTaskTypeLabel(selectedTask.taskType) }}</p>
+
+          <p>
+            <strong>{{ languageService.currentLanguage === 'ua' ? 'Тип:' : 'Type:' }}</strong>
+            {{
+              selectedTask.taskType === 'shared'
+                ? languageService.currentLanguage === 'ua'
+                  ? 'Командна'
+                  : 'Shared'
+                : languageService.currentLanguage === 'ua'
+                  ? 'Особиста'
+                  : 'Personal'
+            }}
+          </p>
+
           @if (selectedTask.taskType === 'shared') {
             <div class="sidebar-block">
-              <h3>Team:</h3>
+              <h3>{{ languageService.currentLanguage === 'ua' ? 'Команда:' : 'Team:' }}</h3>
 
               <div class="team-list">
                 <span class="team-user" *ngFor="let user of selectedTask.sharedWith">
@@ -162,25 +238,40 @@
               </div>
             </div>
           }
+
           @if (selectedTask.taskType === 'personal') {
-            <p><strong>Owner:</strong> {{ selectedTask.owner }}</p>
+            <p>
+              <strong>{{
+                languageService.currentLanguage === 'ua' ? 'Власник:' : 'Owner:'
+              }}</strong>
+              {{ selectedTask.owner }}
+            </p>
           }
 
           @if (selectedTask.deadline) {
-            <p><strong>Deadline:</strong> {{ selectedTask.deadline | date: 'dd.MM.yyyy' }}</p>
+            <p>
+              <strong>{{
+                languageService.currentLanguage === 'ua' ? 'Дедлайн:' : 'Deadline:'
+              }}</strong>
+              {{ selectedTask.deadline | date: 'dd.MM.yyyy' }}
+            </p>
           }
 
           <div class="sidebar-block">
-            <h3>Add Step</h3>
+            <h3>{{ languageService.currentLanguage === 'ua' ? 'Додати крок' : 'Add Step' }}</h3>
 
             <div class="step-input-row">
               <input
                 type="text"
                 [(ngModel)]="newStepText"
-                placeholder="Enter step"
+                [placeholder]="
+                  languageService.currentLanguage === 'ua' ? 'Введіть крок' : 'Enter step'
+                "
                 class="step-input"
               />
-              <button class="small-btn" (click)="addStep()">Add</button>
+              <button class="small-btn" (click)="addStep()">
+                {{ languageService.currentLanguage === 'ua' ? 'Додати' : 'Add' }}
+              </button>
             </div>
 
             @if (selectedTask.steps?.length) {
@@ -200,11 +291,13 @@
           </div>
 
           <div class="sidebar-block">
-            <h3>Notes</h3>
+            <h3>{{ languageService.currentLanguage === 'ua' ? 'Нотатки' : 'Notes' }}</h3>
             <textarea
               [(ngModel)]="selectedTask.notes"
               (blur)="saveNotes()"
-              placeholder="Add a note..."
+              [placeholder]="
+                languageService.currentLanguage === 'ua' ? 'Додати нотатку...' : 'Add a note...'
+              "
               class="notes-area"
             ></textarea>
           </div>
@@ -213,9 +306,13 @@
         <div class="sidebar-actions">
           <button (click)="$event.stopPropagation(); toggleTask(selectedTask)">
             @if (selectedTask.completed) {
-              Mark as active
+              {{ languageService.currentLanguage === 'ua' ? 'Зробити активною' : 'Mark as active' }}
             } @else {
-              Mark as completed
+              {{
+                languageService.currentLanguage === 'ua'
+                  ? 'Позначити виконаною'
+                  : 'Mark as completed'
+              }}
             }
           </button>
 
@@ -223,7 +320,7 @@
             class="delete-btn"
             (click)="$event.stopPropagation(); deleteTask(selectedTask._id)"
           >
-            Delete
+            {{ languageService.currentLanguage === 'ua' ? 'Видалити' : 'Delete' }}
           </button>
         </div>
       }

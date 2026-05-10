@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { LanguageService, AppLanguage } from '../../services/language.service';
 
 @Component({
   selector: 'app-settings',
@@ -11,6 +12,9 @@ import { Component, OnInit } from '@angular/core';
 export class SettingsComponent implements OnInit {
   currentUser: any = null;
   isDarkMode = false;
+  selectedLanguage: AppLanguage = 'en';
+
+  constructor(public languageService: LanguageService) {}
 
   ngOnInit(): void {
     const user = localStorage.getItem('user');
@@ -27,6 +31,8 @@ export class SettingsComponent implements OnInit {
     } else {
       document.body.classList.remove('dark');
     }
+
+    this.selectedLanguage = this.languageService.getLanguage();
   }
 
   toggleDarkMode(event: Event): void {
@@ -40,5 +46,10 @@ export class SettingsComponent implements OnInit {
       document.body.classList.remove('dark');
       localStorage.setItem('darkMode', 'false');
     }
+  }
+
+  changeLanguage(language: AppLanguage): void {
+    this.selectedLanguage = language;
+    this.languageService.setLanguage(language);
   }
 }
